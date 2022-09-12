@@ -52,4 +52,12 @@
         <servlet-name>RequestReimbursementServlet</servlet-name>
         <url-pattern>/request</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>EditProfileServlet</servlet-name>
+        <servlet-class>com.example.reimbursemenonspringver.ui.servlet.EditProfileServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>EditProfileServlet</servlet-name>
+        <url-pattern>/editprofile</url-pattern>
+    </servlet-mapping>
 </web-app>

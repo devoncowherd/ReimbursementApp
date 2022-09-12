@@ -8,44 +8,32 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.InputMismatchException;
 
-@WebServlet(name = "RequestReimbursementServlet", value = "/RequestReimbursementServlet")
-public class RequestReimbursementServlet extends HttpServlet {
+@WebServlet(name = "EditProfileServlet", value = "/EditProfileServlet")
+public class EditProfileServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
         PrintWriter printWriter = response.getWriter();
-        printWriter.write(getReimbursementRequestHTML());
+        printWriter.write(getEditProfileHTML());
+
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String newName = request.getParameter("name");
+        String newEmail = request.getParameter("email");
 
-        EmployeeDao employeeDao = new EmployeeDao();
-        Employee employee = (Employee) request.getSession().getAttribute("employee");
-        double amount = 0.0;
-
-        try{
-            amount = Double.parseDouble(request.getParameter("amount").toString());
-        } catch(InputMismatchException e){
-            e.printStackTrace();
+        if(newName.length() > 3 && newEmail.length() > 5){
+            Employee employee = (Employee) request.getSession().getAttribute("employee");
+            EmployeeDao employeeDao = new EmployeeDao();
+            employee.setEmail(newEmail);
+            employee.setName(newName);
+            employeeDao.updateEmployeeInformation(employee);
+            response.sendRedirect("employee");
         }
-        String receiptLink = request.getParameter("receiptLink").toString();
-        String description = request.getParameter("comment").toString();
-
-        System.out.printf("\n%f %s %s\n", amount,receiptLink,description);
-
-        if(amount > 0.0
-                && receiptLink.length() > 6
-                && description.length() > 6
-                && employee.getEmployeeId() > -1){
-            employeeDao.requestReimbursement(employee.getEmployeeId(),amount, receiptLink, description);
-        }
-        response.sendRedirect("employee");
     }
 
-    public String getReimbursementRequestHTML(){
+    public String getEditProfileHTML(){
         return "<!DOCTYPE html>\n" +
                 "<html>\n" +
                 "    <head>\n" +
@@ -98,18 +86,16 @@ public class RequestReimbursementServlet extends HttpServlet {
                 "        </head>\n" +
                 "    <body>\n" +
                 "        <header>\n" +
-                "            <h1>Reimbursement Request Form</h1>\n" +
+                "            <h1>Edit Profile</h1>\n" +
                 "        </header>\n" +
                 "        <div class=\"dividerLight\"></div>\n" +
                 "        <main>\n" +
-                "            <form method=\"post\" action=\"request\">\n" +
-                "                <Label for=\"amount\">Amount</label><br>\n" +
-                "                <input name=\"amount\" type=\"text\"><br>\n" +
-                "                <Label for=\"receiptLink\">Receipt Link</label><br>\n" +
-                "                <input name=\"receiptLink\" type=\"text\"><br>\n" +
-                "                <Label>Description</label><br>\n" +
-                "                <input name=\"comment\" type=\"text\"><br>\n" +
-                "                <input type=\"submit\" value=\"Submit Request\"> \n" +
+                "            <form method=\"post\" action=\"editprofile\">\n" +
+                "                <label for=\"name\">Name</label><br>\n" +
+                "                <input name=\"name\" type=\"text\"><br>\n" +
+                "                <label for=\"email\">Email</label><br>\n" +
+                "                <input name=\"email\" type=\"text\"><br>\n" +
+                "                <input type=\"submit\" value=\"Update Profile\"> \n" +
                 "            </form>\n" +
                 "        </main>\n" +
                 "        <footer></footer>\n" +
@@ -117,3 +103,4 @@ public class RequestReimbursementServlet extends HttpServlet {
                 "</html>";
     }
 }
+

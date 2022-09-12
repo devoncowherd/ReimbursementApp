@@ -19,11 +19,24 @@ public class EmployeeHomepageServlet extends HttpServlet {
         Employee employee = (Employee) request.getSession().getAttribute("employee");
         PrintWriter printWriter = response.getWriter();
         printWriter.write(getEmployeeHomepageHTML(employee));
+
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+        String logout = request.getParameter("hiddenLogout");
+        String update = request.getParameter("hiddenEditProfile");
+        if(logout.equals("true")){
+            System.out.println("logout = true");
+            request.getSession().removeAttribute("manager");
+            response.sendRedirect(".");
+        } else if(update == "true") {
+            System.out.println("true");
+            response.sendRedirect("editprofile");
+        } else {
+            response.sendRedirect("request");
+        }
     }
 
     public String getEmployeeHomepageHTML(Employee employee){
@@ -90,7 +103,7 @@ public class EmployeeHomepageServlet extends HttpServlet {
                 "                    <td>Email</td>\n" +
                 "" + getEmployeeProfile(employee) +
                 "            </table>\n" +
-                "            <form method=\"get\" action=\"editprofile\"><input value=\"Edit Profile\" type=\"submit\"></form>\n" +
+                "            <form method=\"get\" action=\"editprofile\"><input type=\"text\" name=\"hiddenEditProfile\" hidden><input class=\"editProfileButton\" value=\"Edit Profile\" type=\"submit\"></form>\n" +
                 "            <input class=\"allPendingButton\" type=\"submit\" value=\"View Pending\"><br>\n" +
                 "            <table  class=\"allPendingTable\" hidden>\n" +
                 "                    <td>TransID</td>\n" +
@@ -112,7 +125,7 @@ public class EmployeeHomepageServlet extends HttpServlet {
                 "                    <td>Date</td>\n" + getAllApprovedRequests(employee) + getAllDeniedRequests(employee) +
                 "            </table >\n" +
                 "            <form method=\"get\" action=\"request\"><input type=\"submit\" value=\"New Request\"></form>\n" +
-                "            <form action=\"post\" action=\".\"><input type=\"submit\" name=\"logoutButton\" value=\"Logout\"></form>\n" +
+                "            <form method=\"post\" action=\".\"><input type=\"submit\" value=\"Logout\" class=\"logoutButton\"><input name=\"hiddenLogout\" class=\"hiddenLogout\" type=\"text\" hidden></form>" +
                 "        </main>\n" +
                 "        <footer></footer>\n" +
                 "    </body>\n" +
@@ -125,6 +138,9 @@ public class EmployeeHomepageServlet extends HttpServlet {
                 "    let allResolvedButton = document.querySelector(\".allResolvedButton\");\n" +
                 "    let profile = document.querySelector(\".profile\");\n" +
                 "    let profileButton = document.querySelector(\".profileButton\");\n" +
+                "    let logoutButton = document.querySelector(\".logoutButton\")\n" +
+                "    let editProfileButton = document.querySelector(\".editProfileButton\")" +
+
                 "\n" +
                 "    profileButton.addEventListener(\"click\", ()=>{\n" +
                 "        console.log(\"clicked\");\n" +
@@ -152,6 +168,8 @@ public class EmployeeHomepageServlet extends HttpServlet {
                 "            allResolvedTable.setAttribute(\"hidden\",\"true\")\n" +
                 "        }\n" +
                 "    });\n" +
+                "   editProfileButton.addEventListener(\"click\", ()=> {" +
+                "   hiddenEditProfile.setAttribute(\"value\", \"true\")})" +
                 "\n" +
                 "</script>";
     }
